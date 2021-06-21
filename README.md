@@ -1,37 +1,88 @@
-# Node package
+# `RelativeTimestamp`
 
-[![version](https://img.shields.io/npm/v/PACKAGE-NAME.svg)](https://www.npmjs.com/package/PACKAGE-NAME)
-[![minzipped size](https://img.shields.io/bundlephobia/minzip/PACKAGE-NAME.svg)](https://www.npmjs.com/package/PACKAGE-NAME)
-[![downloads](https://img.shields.io/npm/dt/PACKAGE-NAME.svg)](https://www.npmjs.com/package/PACKAGE-NAME)
+[![version](https://img.shields.io/npm/v/relative-timestamp.svg)](https://www.npmjs.com/package/relative-timestamp)
+[![minzipped size](https://img.shields.io/bundlephobia/minzip/relative-timestamp.svg)](https://www.npmjs.com/package/relative-timestamp)
+[![downloads](https://img.shields.io/npm/dt/relative-timestamp.svg)](https://www.npmjs.com/package/relative-timestamp)
 
-Description
-
-## Getting started
-
-- `yarn set version latest`
-- `yarn`
-- `yarn up * && yarn up @*/*`
-- `yarn dlx @yarnpkg/pnpify --sdk vscode`
+`RelativeTimestamp` is a React component for formatting Unix timestamps in
+relative time, e.g. `Now`, `12 days ago`, or `1 year ago`.
 
 ## Install
 
-- `npm install package-name` or
-- `yarn add package-name`
+- `npm install relative-timestamp` or
+- `yarn add relative-timestamp`
 
 ## Use
 
 ```javascript
-import packageName from 'package-name';
+import RelativeTimestamp from 'relative-timestamp';
 
-packageName();
+const MY_DATE = new Date(2000, 4, 20);
+const MY_TIMESTAMP = MY_DATE.getTime();
+
+// In the year 2021, this will output "21 years ago."
+function MyRelativeTimestamp() {
+  return <RelativeTimestamp value={MY_TIMESTAMP} />;
+}
 ```
+
+## Supported time units
+
+The `RelativeTimestamp` component supports _now_, minutes, hours, days, months,
+and years.
+
+_Seconds_ are not supported and are instead represented as _Now_. Rendering
+timestamps from seconds ago would be too noisy to animate and have too poor of
+performance to re-render every second. Instead of "X seconds ago" ticking up
+every second, the component instead renders "Now" and re-renders on the _minute_
+mark.
 
 ## API
 
-API
+### `children`
 
-## Sponsor 💗
+Type: `(unit, count) => ReactNode` (optional)
 
-If you are a fan of this project, you may
-[become a sponsor](https://github.com/sponsors/CharlesStover) via GitHub's
-Sponsors Program.
+If you want to provide custom internationalization, logic, or styling on your
+display, you can optionally pass a `children` prop that accepts the unit and
+count.
+
+For example,
+
+```javascript
+const MY_DATE = new Date(2000, 4, 20);
+const MY_TIMESTAMP = MY_DATE.getTime();
+
+function MyRelativeTimestamp() {
+  return (
+    <RelativeTimestamp value={MY_TIMESTAMP}>
+      {(unit, count) => {
+        switch (unit) {
+          case 'now':
+            return <I18n>now</I18n>;
+          case 'days':
+          case 'hours':
+          case 'minutes':
+          case 'months':
+          case 'years':
+            return <I18n count={count}>{unit}_ago</I18n>;
+        }
+      }}
+    </RelativeTimestamp>
+  );
+}
+```
+
+### `value`
+
+Type: `number` (required)
+
+The `value` prop should be the Unix timestamp that you want to display
+relatively.
+
+## Contributing
+
+- `yarn set version latest`
+- `yarn up * @*/*`
+- `yarn add --dev @yarnpkg/pnpify`
+- `yarn pnpify --sdk vscode`
